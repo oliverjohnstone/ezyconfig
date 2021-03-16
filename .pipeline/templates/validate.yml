@@ -1,0 +1,62 @@
+steps:
+  - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+    displayName: Prepare SonarCloud
+    inputs:
+      SonarCloud: Sonarcloud
+      organization: cegidgroup
+      scannerMode: CLI
+      configMode: file
+      configFile: sonar-project.properties
+
+  - task: Bash@3
+    displayName: Lint
+    inputs:
+      targetType: inline
+      script: |
+        npm run lint-ci
+
+  - task: Bash@3
+    displayName: Test
+    continueOnError: true
+    inputs:
+      targetType: inline
+      script: |
+        npm run test
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: "JUnit"
+      testResultsFiles: "**/junit.xml"
+      mergeTestResults: true
+      testRunTitle: "Jest Unit Tests"
+      failTaskOnFailedTests: true
+    displayName: Publish unit test report
+
+  - task: DotNetCoreInstaller@2
+    displayName: "Install DotNet Core" # For pretty code coverage reporting
+    inputs:
+      packageType: sdk
+      version: "2.x"
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: PublishCodeCoverageResults@1
+    displayName: Publish Coverage
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: ./coverage/cobertura-coverage.xml
+
+  # Build the package to catch any typescript compilation errors
+  - task: Bash@3
+    displayName: Build
+    inputs:
+      targetType: inline
+      script: |
+        npm run build
+
+  - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+    displayName: Code Analysis
+    continueOnError: true # TODO - Remove
+
+  - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+    displayName: Publish Quality Gate Result
+    continueOnError: true # TODO - Remove

@@ -1,0 +1,88 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+
+pool: "LoopAutoScale"
+
+name: $(SourceBranchName)_$(BuildID)_$(Rev:r)
+
+variables:
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+
+stages:
+  - stage: compliance
+    displayName: All files should be present
+    jobs:
+      - job: compliance
+        steps:
+          - task: Bash@3
+            displayName: Check if files exists
+            inputs:
+              targetType: inline
+              script: |
+                test -f ./package-lock.json && echo "package-lock.json exists." || echo "##vso[task.logissue type=error]package-lock.json does not exist."
+                test -f ./package.json && echo "package.json exists." || echo "##vso[task.logissue type=error]package.json does not exist."
+                test -f ./sonar-project.properties && echo "sonar-project.properties exists." || echo "##vso[task.logissue type=error]sonar-project.properties does not exist."
+
+  - stage: quality
+    displayName: Lint and unit tests
+    jobs:
+      - job: Validate
+        steps:
+           - template: templates/install.yml
+           - template: templates/validate.yml
+
+  - stage: new_version
+    displayName: New Version?
+    condition: eq(variables.isMain, true)
+    jobs:
+      - job: Establish_New_Version
+        steps:
+          - task: Bash@3
+            displayName: Establish new version
+            continueOnError: true
+            inputs:
+              targetType: inline
+              script: |
+                function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
+                PACKAGE_NAME=$(cat package.json | grep name | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
+                PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
+                PUBLISHED_VERSION=$(npm show ${PACKAGE_NAME} version)
+
+                if [[ $(version "$PACKAGE_VERSION") -gt $(version "$PUBLISHED_VERSION") ]]; then
+                  echo "package version: $PACKAGE_VERSION > published version $PUBLISHED_VERSION"
+                  exit 0
+                else
+                  echo "package version: $PACKAGE_VERSION <= published version $PUBLISHED_VERSION"
+                  exit 1
+                fi
+
+  - stage: release
+    displayName: Release
+    dependsOn: new_version
+    condition: and(eq(dependencies.new_version.result, 'Succeeded'), eq(variables.isMain, true))
+    jobs:
+    - deployment:
+      environment: YPN-NPM-Packages
+      strategy:
+        runOnce:
+          deploy:
+            pool: LoopAutoScale
+            steps:
+              - template: ./templates/install.yml
+
+              - task: Bash@3
+                displayName: Build
+                inputs:
+                  targetType: inline
+                  script: |
+                    npm run build
+
+              - task: JFrog.jfrog-artifactory-vsts-extension.artifactory-npm.ArtifactoryNpm@2
+                displayName: npm pack and publish
+                inputs:
+                  command: "pack and publish"
+                  artifactoryService: ArtifactoryCloud
+                  targetRepo: "yupana-npm"

@@ -1,0 +1,154 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Config Definition/Compilation Array Values throws an error when the default value is not an array 1`] = `
+"The following errors occurred whilst building the config value at \\"array\\"
+
+	- Expected default value to be NUMBER[] but received string"
+`;
+
+exports[`Config Definition/Compilation Array Values throws an error when the entries of the default array don't match the expected type 1`] = `
+"The following errors occurred whilst building the config value at \\"bools\\"
+
+	- Expected every value in default array to be a BOOLEAN
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"objs\\"
+
+	- Expected every value in default array to be a OBJECT"
+`;
+
+exports[`Config Definition/Compilation Array Values throws an error when there is an empty array 1`] = `
+"The following errors occurred whilst building the config value at \\"bools\\"
+
+	- Unable to find array elements in array value when splitting on \\",\\""
+`;
+
+exports[`Config Definition/Compilation Array Values throws an error when there is no env value or default value 1`] = `
+"The following errors occurred whilst building the config value at \\"bools\\"
+
+	- No environment variable found for ARRAY and no default value specified."
+`;
+
+exports[`Config Definition/Compilation Plug and Play Environments validates variables in a pnp config 1`] = `
+"The following errors occurred whilst building the config value at \\"toValidate\\"
+
+	- Value did not pass validator check for validator function"
+`;
+
+exports[`Config Definition/Compilation Type Coercion does not support setting the type twice 1`] = `
+"The following errors occurred whilst building the config value at \\"twice\\"
+
+	- A type of \\"NUMBER\\" as already been specified.
+	- Expected default value to be of type NUMBER but received string"
+`;
+
+exports[`Config Definition/Compilation Type Coercion reports errors for malformed environment variables 1`] = `
+"The following errors occurred whilst building the config value at \\"bool\\"
+
+	- Unable to parse value \\"hmm\\" into boolean
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"boolSecret\\"
+
+	- Unable to parse secret value into boolean
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"obj\\"
+
+	- Unable to parse value \\":/\\" into JSON
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"objSecret\\"
+
+	- Unable to parse secret value into JSON"
+`;
+
+exports[`Config Definition/Compilation Type Coercion validates that the default type is the same as the declared type 1`] = `
+"The following errors occurred whilst building the config value at \\"test\\"
+
+	- Expected default value to be of type BOOLEAN but received number
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"test2\\"
+
+	- Expected default value to be of type OBJECT but received number"
+`;
+
+exports[`Config Definition/Compilation Validators validates each array item 1`] = `
+"The following errors occurred whilst building the config value at \\"valid\\"
+
+	- Value as index 1 did not pass validator check for isISO8601"
+`;
+
+exports[`Config Definition/Compilation Validators validates that a file exists 1`] = `
+"The following errors occurred whilst building the config value at \\"noFile\\"
+
+	- Value did not pass validator check for fileExists
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"doesntExist\\"
+
+	- Value did not pass validator check for fileExists"
+`;
+
+exports[`Config Definition/Compilation Validators validates that the value is a valid ISO8601 date format 1`] = `
+"The following errors occurred whilst building the config value at \\"empty\\"
+
+	- Value did not pass validator check for isISO8601"
+`;
+
+exports[`Config Definition/Compilation Validators validates values using the defined validator 1`] = `
+"The following errors occurred whilst building the config value at \\"port\\"
+
+	- Value did not pass validator check for isPort
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"malformed\\"
+
+	- Unable to parse value \\"not-an-int\\" into number"
+`;
+
+exports[`Config Definition/Compilation reports all errors for all properties without leaking secrets 1`] = `
+"The following errors occurred whilst building the config value at \\"numbers.parseError\\"
+
+	- Unable to parse value \\"jdshkgn\\" into number
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"numbers.validationError\\"
+
+	- Value did not pass validator check for isPort
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"arrays.error\\"
+
+	- Can only convert string values to array, but NUMBER was specified.
+	- Unable to parse value \\"ghj\\" into number at index 0
+	- Unable to parse value \\"true\\" into number at index 1
+	- Unable to parse value \\"false\\" into number at index 2
+	- Unable to parse value \\"oj\\" into number at index 3
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"arrays.secret\\"
+
+	- Can only convert string values to array, but NUMBER was specified.
+	- Unable to parse secret value into number at index 0
+	- Unable to parse secret value into number at index 1
+	- Unable to parse secret value into number at index 4
+	- Unable to parse secret value into number at index 5"
+`;
+
+exports[`Config Definition/Compilation throws an error if there is no environment variable or default value 1`] = `
+"The following errors occurred whilst building the config value at \\"test\\"
+
+	- No environment variable found for KEY and no default value specified."
+`;

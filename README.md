@@ -1,20 +1,96 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# ENV Config
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+An environment variable based configuration loader for node projects.
+The motivation for this project is to minimise magic, improve
+communication and documentation in the form of self documenting
+environment variables and to encourage best (and common) practices
+around config loading, validation and consistency between different
+environments. 
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+There are three distinct steps to using this module:
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+#### Definition
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+All configurations should be defined as a single function that returns
+an object using the variable builders provided to the config builder
+function. The variable builders should be used to define the type of the
+environment variable and any validators that should be used to ensure
+that the variable is of the correct type and format. 
+
+#### Compilation
+
+The compilation stage is where we take the config builder function and
+compile it down into a real object. It is at this stage that we run the
+type coercions, validators and transformer functions. Any malformed or
+missing environment variables will throw an exception and will be
+immediately obvious as soon as the service starts, rather than at some
+point during service execution. After a config has been compiled, the
+developer can be sure of the types and format of the loaded
+configuration, freeing them up to build real business value without the
+concern of type casting/validation etc.
+
+#### Runtime
+
+The returned config object from the ConfigBuilder is an object that has
+been wrapped in proxies to provide more detailed error messages and to
+ensure that the loaded config remains immutable, avoiding any
+potentially strange behaviour.
+
+It is recommended to dependency inject the returned config object from
+the ConfigBuilder but we understand that it is not always practical
+and/or doesn't necessarily lead to maintainable or neat code. We have
+therefore included a way to export a singleton configuration object so
+it can be imported like a normal node module.
+
+## Support Utilities / Scripts
+
+Because we have taken a declarative approach to config definition, we
+are able to parse the config and compute a list of required environment
+variables including their type, key, default value, validators etc. This
+means that we can simply pass the config function to the script and pass
+the output to the pipeline developer to configure the individual
+environments.
+
+The script can be run as such:
+
+```bash
+npx env-config explain ./config.js
+```
+
+where `./config.js` is a javascript file with a default export config
+builder function to validate.
+
+## Plug and Play Environments
+
+It is very common for multiple services to use the same resources, for
+example kafka, mongo, sql etc. but we might not want to force the
+developers of these services to keep the same config format. To support
+this, we have a concept of plug and play environments, where you can
+define a shared set of environment variables to inject into the config
+builder function. The advantage of these plug and play environments are
+as follows:
+
+* Less risk of typos
+* Less boilerplate in service configs
+* Common environment variable names and formats across projects
+* The developer can still craft their config as they wish
+* Same validation as config value builders
+
+Example:
+
+```javascript
+module.exports = (env, {kafka, mongo}) => ({
+   mongo: {
+       database: "my-project-db",
+       host: mongo.host,
+       user: mongo.user,
+       password: mongo.password
+   },
+   kafka: {
+       ...kafka
+   },
+   other: {
+       variable: env.value("PROJECT_ENV_VAR", true).asBoolean()
+   }
+});
+```

@@ -1,0 +1,12 @@
+steps:
+  - task: NodeTool@0
+    displayName: Install NPM version
+    inputs:
+      versionSpec: "14.16"
+
+  - task: Bash@3
+    displayName: Install
+    inputs:
+      targetType: inline
+      script: |
+        npm install
