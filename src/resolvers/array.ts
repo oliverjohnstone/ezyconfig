@@ -64,7 +64,7 @@ export class ArrayResolver implements PublicArrayResolverInterface {
         case ConfigValueType.BOOLEAN: expectedType = "boolean"; break;
         }
 
-        if (!(this.base.defaultValue as ConfigValue[]).every(v => typeof v === expectedType)) {
+        if (!this.base.defaultValue.every(v => typeof v === expectedType)) {
             this.buildErrors.push(`Expected every value in default array to be a ${this.type}`);
             return false;
         }
@@ -102,8 +102,8 @@ export class ArrayResolver implements PublicArrayResolverInterface {
         default: parser = null;
         }
 
-        type ReduceType = {errors: string[], parsed: ConfigValue[]};
-        const {errors, parsed} = parts.reduce((acc, part, i) => {
+        type ReduceType = {errors: string[], parsedValue: ConfigValue[]};
+        const {errors, parsedValue} = parts.reduce((acc, part, i) => {
             let value: ConfigValue = part;
 
             if (parser) {
@@ -112,7 +112,7 @@ export class ArrayResolver implements PublicArrayResolverInterface {
                 if (typeof parsed === "string") {
                     // Value failed to parse
                     acc.errors.push(`${parsed} at index ${i}`);
-                    acc.parsed.push(null);
+                    acc.parsedValue.push(null);
                     return acc;
                 } else {
                     value = parsed;
@@ -121,17 +121,17 @@ export class ArrayResolver implements PublicArrayResolverInterface {
 
             if (this.base.validator(value)) {
                 // Value is parsed and validated
-                acc.parsed.push(value);
+                acc.parsedValue.push(value);
             } else {
                 // Value is parsed but invalid
                 acc.errors.push(`Value as index ${i} did not pass validator check for ${this.base.validatorName}`);
-                acc.parsed.push(null);
+                acc.parsedValue.push(null);
             }
 
             return acc;
-        }, {errors: [], parsed: []} as ReduceType);
+        }, {errors: [], parsedValue: []} as ReduceType);
 
         errors.forEach(e => this.buildErrors.push(e));
-        this.parsedValue = parsed;
+        this.parsedValue = parsedValue;
     }
 }

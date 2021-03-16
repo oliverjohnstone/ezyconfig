@@ -120,8 +120,8 @@ export class ConfigBuilder {
         Object.values(this.plugAndPlayEnvs).forEach(({impl}) =>
             impl.getPropertiesUsed().forEach(resolver => {
                 this.addRequiredEnvFromResolver(resolver instanceof CoreResolver
-                    ? (resolver as CoreResolver)
-                    : (resolver as ArrayResolver)
+                    ? resolver
+                    : resolver as ArrayResolver
                 );
             })
         );
@@ -131,7 +131,7 @@ export class ConfigBuilder {
             this.resolveValuesRecursive(valueBuilders as ValueBuilderConfig, errors);
 
         if (errors.length) {
-            throw new Error(`${errors.join(`\n\n${"-".repeat(100)}\n\n`)}`);
+            throw new Error(errors.join(`\n\n${"-".repeat(100)}\n\n`));
         }
 
         const wrapped = wrapInProxiesRecursive("", resolvedConfig);
@@ -209,12 +209,15 @@ export class ConfigBuilder {
                 this.addRequiredEnvFromResolver(value);
             }
 
-            return {
-                ...acc,
-                [key]: isRecursableObject(value)
-                    ? this.mapIntoValueBuildersRecursive(newPath, value as ConfigReturnType)
-                    : ValueBuilder.canWrap(value) ? new ValueBuilder(value as CoreResolver, newPath) : value
-            };
+            return isRecursableObject(value) ?
+                {
+                    ...acc,
+                    [key]: this.mapIntoValueBuildersRecursive(newPath, value as ConfigReturnType)
+                } :
+                {
+                    ...acc,
+                    [key]: ValueBuilder.canWrap(value) ? new ValueBuilder(value as CoreResolver, newPath) : value
+                };
         }, {});
     }
 

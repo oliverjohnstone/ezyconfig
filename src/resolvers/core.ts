@@ -85,7 +85,7 @@ export class CoreResolver implements PublicCoreResolverInterface {
             return;
         }
         this.parsedValue = parsed;
-        if (!this.validator(this.parsedValue as ConfigValue)) {
+        if (!this.validator(this.parsedValue)) {
             this.buildErrors.push(`Value did not pass validator check for ${this.validatorName}`);
         }
     }
