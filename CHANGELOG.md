@@ -1,5 +1,9 @@
 # Change Log
 
+# Version 1.0.4
+
+* Make kafka env less strict on validation
+
 # Version 1.0.3
 
 * Add `schemaRegistryClient` to the kafka pnp env file

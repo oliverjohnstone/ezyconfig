@@ -1,6 +1,5 @@
 import {ConfigValueType} from "../types/config";
 import {Environment} from "../types/environment";
-import validators from "../validators";
 
 export = {
     name: "kafka",
@@ -9,8 +8,7 @@ export = {
             name: "clientId",
             envKey: "KAFKA_CLIENT_ID",
             type: ConfigValueType.STRING,
-            secret: false,
-            validator: validators.isAlphanumeric
+            secret: false
         },
         {
             name: "saslMechanism",
@@ -34,7 +32,6 @@ export = {
             name: "schemaRegistry",
             envKey: "KAFKA_SCHEMA_REGISTRY_URL",
             type: ConfigValueType.STRING,
-            validator: validators.isURL,
             secret: false
         },
         {

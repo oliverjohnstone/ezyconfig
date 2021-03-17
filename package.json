@@ -1,6 +1,6 @@
 {
   "name": "@yupana/env-config",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Environment based configuration loading",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
