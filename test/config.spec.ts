@@ -542,19 +542,12 @@ describe("Config", () => {
             const result = builder.getRequiredEnvironmentVariables();
 
             expect(result).toEqual([
-                {environmentVariable: "ONE", isSecret: false, hasDefault: true, type: "NUMBER", validator: null},
-                {environmentVariable: "TWO", isSecret: false, hasDefault: true, type: "STRING", validator: null},
-                {environmentVariable: "THREE", isSecret: false, hasDefault: true, type: "NUMBER", validator: "isPort"},
-                {environmentVariable: "SECRET", isSecret: true, hasDefault: true, type: "STRING", validator: null},
-                {environmentVariable: "FIVE", isSecret: false, hasDefault: false, type: "NUMBER", validator: null},
-                {
-                    environmentVariable: "SIX",
-                    isSecret: false,
-                    hasDefault: true,
-                    type: "NUMBER[]",
-                    validator: null,
-                    separator: ";"
-                }
+                {name: "ONE", isSecret: false, default: "1", type: "NUMBER"},
+                {name: "TWO", isSecret: false, default: "2", type: "STRING"},
+                {name: "THREE", isSecret: false, default: "3", type: "NUMBER", validator: "isPort"},
+                {name: "SECRET", isSecret: true, default: "shhh", type: "STRING"},
+                {name: "FIVE", isSecret: false, type: "NUMBER"},
+                {name: "SIX", isSecret: false, default: "", type: "NUMBER[]", separator: ";"}
             ]);
         });
 

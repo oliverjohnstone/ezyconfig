@@ -9,6 +9,9 @@
     "lint-ci": "eslint --f json -o eslint.json --ext .js,.ts ./src ./test",
     "build": "tsc"
   },
+  "bin": {
+    "explain-config": "dist/scripts/explain.js"
+  },
   "jestSonar": {
     "reportFile": "junit.xml"
   },
@@ -39,6 +42,7 @@
     "typescript": "^4.1.2"
   },
   "dependencies": {
+    "commander": "^7.1.0",
     "validator": "^13.5.2"
   }
 }

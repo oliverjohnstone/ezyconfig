@@ -19,12 +19,12 @@ type ValueBuilderConfig = {
     [key: string]: ValueBuilder|ValueBuilderConfig
 }
 
-type RequiredEnvironmentVariableDescription = {
-    environmentVariable: string;
-    hasDefault: boolean;
+export type RequiredEnvironmentVariableDescription = {
+    name: string;
+    default?: string;
     type: string;
     isSecret: boolean;
-    validator: string|null;
+    validator?: string;
     separator?: string;
 }
 
@@ -42,18 +42,19 @@ export class ConfigBuilder {
     private setupSingleton = false;
     private requiredEnvironmentVariables: RequiredEnvironmentVariableDescription[] = [];
     private builtConfig: ResolvedConfig|null = null;
+    private builtWithErrors = false;
     private obfuscatedConfig: ResolvedConfig|null = null;
 
     public getRequiredEnvironmentVariables(): RequiredEnvironmentVariableDescription[] {
-        if (!this.builtConfig) {
+        if (!this.builtWithErrors && !this.builtConfig) {
             throw new Error("Config should be built before getting the required environment variables.");
         }
         const keys: {[key: string]: boolean} = {};
         return this.requiredEnvironmentVariables.filter(envVar => {
-            if (keys[envVar.environmentVariable]) {
+            if (keys[envVar.name]) {
                 return false;
             }
-            keys[envVar.environmentVariable] = true;
+            keys[envVar.name] = true;
             return true;
         });
     }
@@ -131,6 +132,7 @@ export class ConfigBuilder {
             this.resolveValuesRecursive(valueBuilders as ValueBuilderConfig, errors);
 
         if (errors.length) {
+            this.builtWithErrors = true;
             throw new Error(errors.join(`\n\n${"-".repeat(100)}\n\n`));
         }
 
@@ -225,13 +227,17 @@ export class ConfigBuilder {
         const base = resolver instanceof ArrayResolver ? resolver.base : resolver;
 
         this.requiredEnvironmentVariables.push({
-            environmentVariable: base.envKey,
-            hasDefault: base.defaultValue !== undefined,
+            name: base.envKey,
             type: `${resolver.type || ConfigValueType.STRING}${resolver instanceof ArrayResolver ? "[]" : ""}`,
             isSecret: base.isSecret,
-            validator: base.validator.name || null,
+            ...base.validator.name && {
+                validator: base.validator.name
+            },
             ...resolver instanceof ArrayResolver && {
                 separator: resolver.splitOn
+            },
+            ...base.defaultValue !== undefined && {
+                default: `${base.defaultValue}`
             }
         });
     }

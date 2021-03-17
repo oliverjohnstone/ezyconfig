@@ -51,14 +51,25 @@ means that we can simply pass the config function to the script and pass
 the output to the pipeline developer to configure the individual
 environments.
 
-The script can be run as such:
+You should install this module globally to use this script:
 
 ```bash
-npx env-config explain ./config.js
+npm i -g @yupana/env-config
 ```
 
-where `./config.js` is a javascript file with a default export config
-builder function to validate.
+The script usage is as follows:
+
+```bash
+explain-config [options] <configFile> [plugAndPlayFiles...]
+```
+
+You have several output options available:
+
+| Option   | Format                                                                         |
+|----------|--------------------------------------------------------------------------------|
+| -o table | A formatted table that is useful for copying into markdown, such as an ID Card |
+| -o json  | A JSON stringified format of the environment variables                         |
+| -o yml   | Key/Value pairs in YML format for copying into service charts                  |
 
 ## Plug and Play Environments
 
