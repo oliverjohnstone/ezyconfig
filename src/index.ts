@@ -37,7 +37,7 @@ type PlugAndPlayEnvs = {
 
 let singletonConfigInstance: ResolvedConfig|null = null;
 
-export class ConfigBuilder {
+class ConfigBuilder {
     private readonly plugAndPlayEnvs: PlugAndPlayEnvs = {};
     private setupSingleton = false;
     private requiredEnvironmentVariables: RequiredEnvironmentVariableDescription[] = [];
@@ -243,11 +243,11 @@ export class ConfigBuilder {
     }
 }
 
-export function resetSingleton(): void {
+function resetSingleton(): void {
     singletonConfigInstance = null;
 }
 
-export default new Proxy({} as ResolvedConfig, {
+const singleton = new Proxy({} as ResolvedConfig, {
     get(target: ResolvedConfig, p: PropertyKey): unknown|ConfigValue|ConfigValue[] {
         if (singletonConfigInstance === null) {
             throw new Error("Singleton export not available. Are you sure you've configured it, " +
@@ -269,3 +269,9 @@ export default new Proxy({} as ResolvedConfig, {
         }
     }
 });
+
+export {
+    singleton,
+    resetSingleton,
+    ConfigBuilder
+};

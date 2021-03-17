@@ -3,7 +3,7 @@ import mongo from "./mongo";
 import launchDarkly from "./launchDarkly";
 import azure from "./azure";
 
-export {
+export = {
     kafka,
     mongo,
     launchDarkly,

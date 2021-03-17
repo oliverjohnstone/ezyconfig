@@ -2,7 +2,7 @@ import {ConfigValueType} from "../types/config";
 import {Environment} from "../types/environment";
 import validators from "../validators";
 
-export default {
+export = {
     name: "kafka",
     properties: [
         {

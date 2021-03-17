@@ -1,19 +1,19 @@
-import {kafka, azure, launchDarkly, mongo} from "../src/pnp";
+import pnp from "../src/pnp";
 
 describe("Default Plug and Play Environments", () => {
     test("kafka is configured correctly", () => {
-        expect(kafka).toMatchSnapshot();
+        expect(pnp.kafka).toMatchSnapshot();
     });
 
     test("mongo is configured correctly", () => {
-        expect(mongo).toMatchSnapshot();
+        expect(pnp.mongo).toMatchSnapshot();
     });
 
     test("azure is configured correctly", () => {
-        expect(azure).toMatchSnapshot();
+        expect(pnp.azure).toMatchSnapshot();
     });
 
     test("launch darkly is configured correctly", () => {
-        expect(launchDarkly).toMatchSnapshot();
+        expect(pnp.launchDarkly).toMatchSnapshot();
     });
 });

@@ -1,4 +1,4 @@
-import singletonConfig, {ConfigBuilder, resetSingleton} from "../src";
+import {singleton as singletonConfig, ConfigBuilder, resetSingleton} from "../src";
 import {InjectedEnvironment} from "../src/injectedEnvironment";
 import {ConfigReturnType, ConfigValueType} from "../src/types/config";
 import {Environment} from "../src/types/environment";

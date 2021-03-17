@@ -1,7 +1,7 @@
 import {ConfigValueType} from "../types/config";
 import {Environment} from "../types/environment";
 
-export default {
+export = {
     name: "launchDarkly",
     properties: [
         {
