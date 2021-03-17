@@ -117,6 +117,12 @@ Object {
       "secret": false,
       "type": "STRING",
     },
+    Object {
+      "envKey": "KAFKA_COLLECTION_SERVICE_CLIENT",
+      "name": "schemaRegistryClient",
+      "secret": false,
+      "type": "STRING",
+    },
   ],
 }
 `;

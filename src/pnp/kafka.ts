@@ -85,6 +85,12 @@ export = {
             envKey: "KAFKA_NAMESPACE",
             type: ConfigValueType.STRING,
             secret: false
+        },
+        {
+            name: "schemaRegistryClient",
+            envKey: "KAFKA_COLLECTION_SERVICE_CLIENT",
+            type: ConfigValueType.STRING,
+            secret: false
         }
     ]
 } as Environment;
