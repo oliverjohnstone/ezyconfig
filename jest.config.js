@@ -12,5 +12,6 @@ module.exports = {
             branches: 98,
             statements: 99
         }
-    }
+    },
+    verbose: true
 };

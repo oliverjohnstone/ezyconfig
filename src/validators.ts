@@ -18,7 +18,7 @@ function wrapper(fn: (value: string, ...args: any[]) => boolean, name: string): 
     };
 }
 
-const validatorObj = {
+export default {
     isAlpha: wrapper(validators.isAlpha, "isAlpha"),
     isAlphanumeric: wrapper(validators.isAlphanumeric, "isAlphanumeric"),
     isAscii: wrapper(validators.isAscii, "isAscii"),
@@ -66,5 +66,3 @@ const validatorObj = {
     isPort: {name: "isPort", fn: isPort},
     fileExists: {name: "fileExists", fn: fileExists}
 };
-
-export default validatorObj;

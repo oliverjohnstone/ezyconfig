@@ -105,3 +105,19 @@ module.exports = (env, {kafka, mongo}) => ({
    }
 });
 ```
+
+There are some default plug and play environments available in this
+module. They can be loaded like so:
+
+```javascript
+const {mongo, kafka, azure, launchDarkly} = require("@yupana/env-config/lib/pnp");
+const {ConfigBuilder} = require("@yupana/env-config");
+
+const builder = new ConfigBuilder();
+
+builder
+    .loadPlugAndPlayEnv(mongo)
+    .loadPlugAndPlayEnv(kafka)
+    .loadPlugAndPlayEnv(azure)
+    .loadPlugAndPlayEnv(launchDarkly);
+```

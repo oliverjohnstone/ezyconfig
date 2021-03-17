@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default Plug and Play Environments azure is configured correctly 1`] = `
+Object {
+  "name": "azure",
+  "properties": Array [
+    Object {
+      "envKey": "AZURE_ACCOUNT",
+      "name": "account",
+      "secret": false,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "AZURE_ACCOUNT_KEY",
+      "name": "key",
+      "secret": true,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "AZURE_ACCOUNT_CONTAINER",
+      "name": "container",
+      "secret": false,
+      "type": "STRING",
+    },
+  ],
+}
+`;
+
+exports[`Default Plug and Play Environments kafka is configured correctly 1`] = `
+Object {
+  "name": "kafka",
+  "properties": Array [
+    Object {
+      "envKey": "KAFKA_CLIENT_ID",
+      "name": "clientId",
+      "secret": false,
+      "type": "STRING",
+      "validator": Object {
+        "fn": [Function],
+        "name": "isAlphanumeric",
+      },
+    },
+    Object {
+      "envKey": "KAFKA_SASL_MECHANISM",
+      "name": "saslMechanism",
+      "secret": false,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "KAFKA_CLUSTER_API_KEY",
+      "name": "username",
+      "secret": false,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "KAFKA_CLUSTER_API_SECRET",
+      "name": "password",
+      "secret": true,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "KAFKA_SCHEMA_REGISTRY_URL",
+      "name": "schemaRegistry",
+      "secret": false,
+      "type": "STRING",
+      "validator": Object {
+        "fn": [Function],
+        "name": "isURL",
+      },
+    },
+    Object {
+      "envKey": "KAFKA_SCHEMA_REGISTRY_API_KEY",
+      "name": "schemaRegistryUser",
+      "secret": false,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "KAFKA_SCHEMA_REGISTRY_API_SECRET",
+      "name": "schemaRegistryPass",
+      "secret": true,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "KAFKA_SSL",
+      "name": "enableSSL",
+      "secret": false,
+      "type": "BOOLEAN",
+    },
+    Object {
+      "envKey": "KAFKA_BROKERS",
+      "name": "brokers",
+      "secret": false,
+      "splitOn": ",",
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "KAFKA_REQUEST_TIMEOUT",
+      "name": "requestTimeout",
+      "secret": false,
+      "type": "NUMBER",
+    },
+    Object {
+      "envKey": "KAFKA_MAX_RETRIES",
+      "name": "maxRetries",
+      "secret": false,
+      "type": "NUMBER",
+    },
+    Object {
+      "envKey": "KAFKA_CONSUMER_GROUP",
+      "name": "consumerGroup",
+      "secret": false,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "KAFKA_NAMESPACE",
+      "name": "namespace",
+      "secret": false,
+      "type": "STRING",
+    },
+  ],
+}
+`;
+
+exports[`Default Plug and Play Environments launch darkly is configured correctly 1`] = `
+Object {
+  "name": "launchDarkly",
+  "properties": Array [
+    Object {
+      "envKey": "LAUNCH_DARKLY_API_KEY",
+      "name": "apiKey",
+      "secret": false,
+      "type": "STRING",
+    },
+  ],
+}
+`;
+
+exports[`Default Plug and Play Environments mongo is configured correctly 1`] = `
+Object {
+  "name": "mongo",
+  "properties": Array [
+    Object {
+      "envKey": "MONGO_USER",
+      "name": "user",
+      "secret": false,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "MONGO_PASSWORD",
+      "name": "password",
+      "secret": true,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "MONGO_CONNECTION_STRING",
+      "name": "connection",
+      "secret": false,
+      "type": "STRING",
+    },
+    Object {
+      "envKey": "MONGO_DATABASE",
+      "name": "database",
+      "secret": false,
+      "type": "STRING",
+      "validator": Object {
+        "fn": [Function],
+        "name": "isAlphanumeric",
+      },
+    },
+  ],
+}
+`;

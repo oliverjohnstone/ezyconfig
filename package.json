@@ -2,15 +2,16 @@
   "name": "@yupana/env-config",
   "version": "1.0.0",
   "description": "Environment based configuration loading",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "bin": {
+    "explain-config": "lib/scripts/explain.js"
+  },
   "scripts": {
     "test": "jest",
     "lint": "eslint --ext .js,.ts ./src ./test",
     "lint-ci": "eslint --f json -o eslint.json --ext .js,.ts ./src ./test",
     "build": "tsc"
-  },
-  "bin": {
-    "explain-config": "dist/scripts/explain.js"
   },
   "jestSonar": {
     "reportFile": "junit.xml"
@@ -25,9 +26,8 @@
     "node": ">=14.16.0"
   },
   "files": [
-    "dist"
+    "lib"
   ],
-  "types": "dist/index.d.ts",
   "devDependencies": {
     "@tsconfig/node12": "^1.0.7",
     "@types/jest": "^26.0.16",
