@@ -533,6 +533,37 @@ describe("Config", () => {
     });
 
     describe("Support Utilities", () => {
+        describe("isProduction()", () => {
+            it.each([
+                [true, "production"],
+                [true, " pRoDuCtion "],
+                [false, "prod"],
+                [false, "dev"]
+            ])("returns %j for the environment determined by NODE_ENV = %s", (result, envValue) => {
+                createEnvVars({NODE_ENV: envValue});
+
+                expect((new ConfigBuilder().build(env => ({isProd: env.isProduction()})))).toEqual({
+                    isProd: result
+                });
+            });
+        });
+
+        describe("isDevelopment()", () => {
+            it.each([
+                [false, "production"],
+                [false, " pRoDuCtion "],
+                [true, "prod"],
+                [true, "dev"],
+                [true, "development"]
+            ])("returns %j for the environment determined by NODE_ENV = %s", (result, envValue) => {
+                createEnvVars({NODE_ENV: envValue});
+
+                expect((new ConfigBuilder().build(env => ({isDev: env.isDevelopment()})))).toEqual({
+                    isDev: result
+                });
+            });
+        });
+
         it("details all required environment properties of a configuration", () => {
             createEnvVars({"FIVE": "5"});
             const builder = new ConfigBuilder();
