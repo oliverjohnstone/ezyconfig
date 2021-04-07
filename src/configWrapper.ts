@@ -11,6 +11,10 @@ function wrap(path: string, config: ResolvedConfig): ResolvedConfig {
             }
         },
         get(target: ResolvedConfig, p: PropertyKey, receiver: unknown): unknown|ConfigValue|ConfigValue[] {
+            if (p === "toJSON") {
+                return () => config;
+            }
+
             if (Reflect.has(target, p) || isProxyWhitelist(p)) {
                 return Reflect.get(target, p, receiver);
             }

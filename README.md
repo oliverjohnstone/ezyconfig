@@ -42,6 +42,21 @@ and/or doesn't necessarily lead to maintainable or neat code. We have
 therefore included a way to export a singleton configuration object so
 it can be imported like a normal node module.
 
+Sometimes it is necessary to get the normal config object that has not
+been wrapped in a proxy so that you can pass the object down into
+dependencies without causing exceptions when accessing non-existent
+properties. To do this, you can call `toJSON` at any level in the config
+object and this will return the "real" object. Example:
+
+```javascript
+const {singleton: config} = require("@yupana/env-config");
+const ExternalLib = require("some-external-library");
+
+const lib = new ExternalLib(config.externalLibConfig.toJSON());
+
+lib.doSomething();
+```
+
 ## Support Utilities / Scripts
 
 Because we have taken a declarative approach to config definition, we

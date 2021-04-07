@@ -1,5 +1,10 @@
 # Change Log
 
+# Version 1.0.5
+
+* Adds toJSON method to return the underlying object that is not wrapped
+  in a proxy
+
 # Version 1.0.4
 
 * Make kafka env less strict on validation

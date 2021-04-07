@@ -522,8 +522,15 @@ describe("Config", () => {
                 "Cannot change property test. Config is immutable."
             );
         });
-    });
 
+        it("returns the underlying object when calling toJSON", () => {
+            const objectValue = {some: {complex: {object: "value"}}};
+            const config = (new ConfigBuilder())
+                .build((): ConfigReturnType => ({object: {value: objectValue}}));
+
+            expect(config.object.value.toJSON()).toEqual(objectValue);
+        });
+    });
 
     describe("Support Utilities", () => {
         it("details all required environment properties of a configuration", () => {
