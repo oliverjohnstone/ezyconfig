@@ -530,6 +530,16 @@ describe("Config", () => {
 
             expect(config.object.value.toJSON()).toEqual(objectValue);
         });
+
+        it("does not throw an exception when accessing non-existent properties on a object obtained via toJSON()", () => {
+            const objectValue = {some: {complex: {object: "value"}}};
+            const config = (new ConfigBuilder())
+                .build((): ConfigReturnType => ({object: {value: objectValue}}));
+
+            expect(() => config.object.toJSON().unknown).not.toThrow();
+            expect(() => config.object.toJSON().value.unknown).not.toThrow();
+            expect(() => config.object.toJSON().value.some.complex.unknown).not.toThrow();
+        });
     });
 
     describe("Support Utilities", () => {

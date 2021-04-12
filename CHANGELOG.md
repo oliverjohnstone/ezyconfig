@@ -1,5 +1,10 @@
 # Change Log
 
+# Version 1.0.7
+
+* Fixes bug with `toJSON` returning a nested proxy rather than the
+  originally resolved config object.
+
 # Version 1.0.6
 
 * Adds isProduction and isDevelopment methods to injected environment

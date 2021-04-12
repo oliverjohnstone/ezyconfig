@@ -1,7 +1,8 @@
 import {ConfigValue, ResolvedConfig} from "./types/config";
 import {createObjectPath, isPrimitive, isProxyWhitelist} from "./utils";
+import cloneDeep from "lodash.clonedeep";
 
-function wrap(path: string, config: ResolvedConfig): ResolvedConfig {
+function wrap(path: string, config: ResolvedConfig, clone: ResolvedConfig): ResolvedConfig {
     return new Proxy(config, {
         set(target: ResolvedConfig, p: PropertyKey): boolean {
             if (Array.isArray(config)) {
@@ -12,7 +13,7 @@ function wrap(path: string, config: ResolvedConfig): ResolvedConfig {
         },
         get(target: ResolvedConfig, p: PropertyKey, receiver: unknown): unknown|ConfigValue|ConfigValue[] {
             if (p === "toJSON") {
-                return () => config;
+                return () => clone;
             }
 
             if (Reflect.has(target, p) || isProxyWhitelist(p)) {
@@ -33,8 +34,10 @@ function wrap(path: string, config: ResolvedConfig): ResolvedConfig {
 }
 
 export function wrapInProxiesRecursive(path: string, config: ResolvedConfig): ResolvedConfig {
+    const clone = cloneDeep(config);
+
     if (Array.isArray(config)) {
-        return wrap(path, config);
+        return wrap(path, config, clone);
     }
 
     return wrap(path, Object.entries(config).reduce((acc, [key, value]) => ({
@@ -42,5 +45,5 @@ export function wrapInProxiesRecursive(path: string, config: ResolvedConfig): Re
         [key]: isPrimitive(value)
             ? value
             : wrapInProxiesRecursive(createObjectPath(path, key), value as ResolvedConfig)
-    }), {}));
+    }), {}), clone);
 }
