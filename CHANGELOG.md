@@ -1,5 +1,12 @@
 # Change Log
 
+# Version 1.0.8
+
+* Fixes bug parsing boolean values where the environment variable is
+  falsy. It would previously return the default value rather than the
+  set value because of the following condition: `return parsedValue ||
+  defaultValue`
+
 # Version 1.0.7
 
 * Fixes bug with `toJSON` returning a nested proxy rather than the

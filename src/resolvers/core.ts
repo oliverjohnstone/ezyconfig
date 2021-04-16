@@ -16,6 +16,7 @@ export class CoreResolver implements PublicCoreResolverInterface {
     public type: ConfigValueType|null = null;
     private buildErrors: string[] = [];
     private parsedValue: ConfigValue|null = null;
+    private parsed = false;
     public validator: Validator = () => true;
     public validatorName = "";
 
@@ -52,6 +53,19 @@ export class CoreResolver implements PublicCoreResolverInterface {
     }
 
     public build(): void {
+        if (this.parsed) {
+            return;
+        }
+
+        const setAndValidateParsedValue = (value: ConfigValue): void => {
+            this.parsedValue = value;
+            if (!this.validator(this.parsedValue)) {
+                this.buildErrors.push(`Value did not pass validator check for ${this.validatorName}`);
+            } else {
+                this.parsed = true;
+            }
+        };
+
         if (this.envValue === null) {
             if (this.defaultValue) {
                 this.validateDefaultValue();
@@ -70,24 +84,15 @@ export class CoreResolver implements PublicCoreResolverInterface {
         case ConfigValueType.BOOLEAN: parsed = parseBoolean(this.envValue, this.isSecret); break;
         case ConfigValueType.NUMBER: parsed = parseNumber(this.envValue, this.isSecret); break;
         case ConfigValueType.OBJECT: parsed = parseObject(this.envValue, this.isSecret); break;
-        default: {
-            this.parsedValue = this.envValue;
-            if (!this.validator(this.parsedValue as ConfigValue)) {
-                this.buildErrors.push(`Value did not pass validator check for ${this.validatorName}`);
-            }
-            return;
-        }
+        default: return setAndValidateParsedValue(this.envValue);
         }
 
         if (typeof parsed === "string") {
             this.buildErrors.push(parsed);
-            this.parsedValue = null;
             return;
         }
-        this.parsedValue = parsed;
-        if (!this.validator(this.parsedValue)) {
-            this.buildErrors.push(`Value did not pass validator check for ${this.validatorName}`);
-        }
+
+        return setAndValidateParsedValue(parsed);
     }
 
     public get parsedEnvValue(): ConfigValue|null {
@@ -95,7 +100,7 @@ export class CoreResolver implements PublicCoreResolverInterface {
     }
 
     public get value(): ConfigValue|ConfigValue[] {
-        return this.parsedEnvValue || (this.defaultValue as ConfigValue);
+        return this.parsed ? this.parsedEnvValue : (this.defaultValue as ConfigValue);
     }
 
     public get logValue(): ConfigValue|ConfigValue[] {
