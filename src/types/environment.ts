@@ -1,6 +1,6 @@
 import {ConfigValue, ConfigValueType, Validator} from "./config";
 
-type EnvironmentProperty = {
+export type EnvironmentProperty = {
     name: string;
     envKey: string;
     secret: boolean;
@@ -9,11 +9,11 @@ type EnvironmentProperty = {
     validator?: {name: string, fn: Validator};
 };
 
-type EnvironmentArrayProperty = EnvironmentProperty & {
+export type EnvironmentArrayProperty = EnvironmentProperty & {
     splitOn: string;
 }
 
-type Environment = {
+export type Environment = {
     name: string;
     properties: (EnvironmentProperty|EnvironmentArrayProperty)[];
 };

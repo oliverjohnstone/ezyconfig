@@ -1,5 +1,10 @@
 # Change Log
 
+# Version 1.0.9
+
+* Adds checkout step to release pipeline
+* Exports missing environment types
+
 # Version 1.0.8
 
 * Fixes bug parsing boolean values where the environment variable is

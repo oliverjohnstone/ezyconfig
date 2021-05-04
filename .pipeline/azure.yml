@@ -71,6 +71,9 @@ stages:
           deploy:
             pool: LoopAutoScale
             steps:
+              - checkout: self
+                clean: true
+
               - template: ./templates/install.yml
 
               - task: Bash@3
