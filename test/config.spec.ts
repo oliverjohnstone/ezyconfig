@@ -60,6 +60,12 @@ describe("Config", () => {
             }))).toThrowErrorMatchingSnapshot();
         });
 
+        it("allows a default type of null when no env value is provided", () => {
+            expect(new ConfigBuilder().build((env: InjectedEnvironment): ConfigReturnType => ({
+                test: env.value("KEY", null)
+            }))).toEqual({test: null});
+        });
+
         it("reports all errors for all properties without leaking secrets", () => {
             createEnvVars({
                 "INVALID_NUM": "jdshkgn",

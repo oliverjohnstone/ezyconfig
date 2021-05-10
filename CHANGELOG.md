@@ -1,5 +1,9 @@
 # Change Log
 
+# Version 1.0.10
+
+* Supports `null` default value with optional environment variable
+
 # Version 1.0.9
 
 * Adds checkout step to release pipeline

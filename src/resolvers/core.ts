@@ -37,6 +37,10 @@ export class CoreResolver implements PublicCoreResolverInterface {
     }
 
     private validateDefaultValue(): void {
+        if (this.defaultValue === null) {
+            return;
+        }
+
         let expectedType = "string";
 
         switch (this.type) {
@@ -67,7 +71,7 @@ export class CoreResolver implements PublicCoreResolverInterface {
         };
 
         if (this.envValue === null) {
-            if (this.defaultValue) {
+            if (typeof this.defaultValue !== "undefined") {
                 this.validateDefaultValue();
             } else {
                 this.buildErrors.push(
