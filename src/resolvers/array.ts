@@ -1,4 +1,4 @@
-import {parseBoolean, parseNumber, parseObject} from "../parsers";
+import {parseBoolean, parseNumber, parseObject, parseInterval} from "../parsers";
 import {ArrayConfigValue, ConfigValue, ConfigValueType, PublicArrayResolverInterface, Validator} from "../types/config";
 import {CoreResolver} from "./core";
 
@@ -21,6 +21,11 @@ export class ArrayResolver implements PublicArrayResolverInterface {
 
     public get logValue(): ArrayConfigValue {
         return this.base.isSecret ? this.value.map(() => "****") : this.value;
+    }
+
+    public ofIntervals(): PublicArrayResolverInterface {
+        this.type = ConfigValueType.INTERVAL;
+        return this;
     }
 
     public ofNumbers(): PublicArrayResolverInterface {
@@ -99,6 +104,7 @@ export class ArrayResolver implements PublicArrayResolverInterface {
         case ConfigValueType.BOOLEAN: parser = parseBoolean; break;
         case ConfigValueType.NUMBER: parser = parseNumber; break;
         case ConfigValueType.OBJECT: parser = parseObject; break;
+        case ConfigValueType.INTERVAL: parser = parseInterval; break;
         default: parser = null;
         }
 

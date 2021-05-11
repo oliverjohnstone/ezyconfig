@@ -46,7 +46,14 @@ function exec(configFile: string, plugAndPlayFiles: string[], {output}: {output:
 
     try {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        builder.build(require(path.resolve(configFile)));
+        let builderFn = require(path.resolve(configFile));
+
+        // Check to see if the config file is compiled typescript and if it is use the default export instead
+        if (builderFn.default) {
+            builderFn = builderFn.default;
+        }
+
+        builder.build(builderFn);
     } catch (e) {
         errors = e;
     }

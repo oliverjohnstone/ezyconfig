@@ -1,5 +1,10 @@
 # Change Log
 
+# Version 1.1.0
+
+* Adds time intervals as a first class type
+* Supports explaining typescript compiled config files
+
 # Version 1.0.10
 
 * Supports `null` default value with optional environment variable

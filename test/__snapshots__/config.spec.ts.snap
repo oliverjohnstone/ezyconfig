@@ -64,7 +64,13 @@ The following errors occurred whilst building the config value at \\"obj\\"
 
 The following errors occurred whilst building the config value at \\"objSecret\\"
 
-	- Unable to parse secret value into JSON"
+	- Unable to parse secret value into JSON
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"interval\\"
+
+	- Unable to parse value \\"hmmm\\" into time interval"
 `;
 
 exports[`Config Definition/Compilation Type Coercion validates that the default type is the same as the declared type 1`] = `
@@ -116,7 +122,13 @@ The following errors occurred whilst building the config value at \\"malformed\\
 `;
 
 exports[`Config Definition/Compilation reports all errors for all properties without leaking secrets 1`] = `
-"The following errors occurred whilst building the config value at \\"numbers.parseError\\"
+"The following errors occurred whilst building the config value at \\"timeInterval\\"
+
+	- Unable to parse secret value into time interval
+
+----------------------------------------------------------------------------------------------------
+
+The following errors occurred whilst building the config value at \\"numbers.parseError\\"
 
 	- Unable to parse value \\"jdshkgn\\" into number
 

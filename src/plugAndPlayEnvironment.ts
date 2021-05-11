@@ -42,12 +42,14 @@ export class PlugAndPlayEnvironmentImpl {
                 case ConfigValueType.BOOLEAN: resolver.ofBooleans(); break;
                 case ConfigValueType.NUMBER: resolver.ofNumbers(); break;
                 case ConfigValueType.OBJECT: resolver.ofObjects(); break;
+                case ConfigValueType.INTERVAL: resolver.ofIntervals(); break;
                 }
             } else {
                 switch (prop.type) {
                 case ConfigValueType.BOOLEAN: resolver.asBoolean(); break;
                 case ConfigValueType.NUMBER: resolver.asNumber(); break;
                 case ConfigValueType.OBJECT: resolver.asObject(); break;
+                case ConfigValueType.INTERVAL: resolver.asInterval(); break;
                 }
             }
 

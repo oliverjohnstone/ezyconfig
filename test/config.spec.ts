@@ -1,4 +1,4 @@
-import {singleton as singletonConfig, ConfigBuilder, resetSingleton} from "../src";
+import {ConfigBuilder, resetSingleton, singleton as singletonConfig} from "../src";
 import {InjectedEnvironment} from "../src/injectedEnvironment";
 import {ConfigReturnType, ConfigValueType} from "../src/types/config";
 import {Environment} from "../src/types/environment";
@@ -71,10 +71,12 @@ describe("Config", () => {
                 "INVALID_NUM": "jdshkgn",
                 "INVALID_PORT": "0",
                 "ARRAY_ERROR": "ghj, true, false, oj",
-                "SECRET": "SECRET|values|5|8|be|thrown"
+                "SECRET": "SECRET|values|5|8|be|thrown",
+                "TIME_INTERVAL_ERROR": "dfkjdf"
             });
             expect(() => (new ConfigBuilder())
                 .build((env: InjectedEnvironment): ConfigReturnType => ({
+                    timeInterval: env.secret("TIME_INTERVAL_ERROR").asInterval(),
                     numbers: {
                         parseError: env.value("INVALID_NUM").asNumber(),
                         validationError: env.value("INVALID_PORT").asNumber().validate(env.validators.isPort)
@@ -266,7 +268,9 @@ describe("Config", () => {
                     "ARRAY_NUMBERS": "1, 2, 3, 4",
                     "ARRAY_OBJECTS": Array.from(new Array(5), () => JSON.stringify({hi: "world"}))
                         .join("$$$"),
-                    "ARRAY_BOOLEANS": "T|F|TrUe|FaLse |0|1"
+                    "ARRAY_BOOLEANS": "T|F|TrUe|FaLse |0|1",
+                    "INTERVAL": "5 minutes",
+                    "ARRAY_INTERVALS": "5 minutes, 2 minutes, 3 hours"
                 });
 
                 const config = (new ConfigBuilder())
@@ -274,10 +278,12 @@ describe("Config", () => {
                         number: env.value("NUMBER").asNumber(),
                         boolean: env.value("BOOLEAN").asBoolean(),
                         object: env.value("OBJECT").asObject(),
+                        interval: env.value("INTERVAL").asInterval(),
                         arrays: {
                             ofNumbers: env.value("ARRAY_NUMBERS").asArray(",").ofNumbers(),
                             ofObjects: env.value("ARRAY_OBJECTS").asArray("$$$").ofObjects(),
-                            ofBooleans: env.value("ARRAY_BOOLEANS").asArray("|").ofBooleans()
+                            ofBooleans: env.value("ARRAY_BOOLEANS").asArray("|").ofBooleans(),
+                            ofIntervals: env.value("ARRAY_INTERVALS").asArray(",").ofIntervals()
                         },
                         function: () => "hello"
                     }));
@@ -292,12 +298,14 @@ describe("Config", () => {
                             {hi: "world"},
                             {hi: "world"},
                             {hi: "world"}
-                        ]
+                        ],
+                        ofIntervals: [300000, 120000, 10800000]
                     },
                     boolean: true,
                     number: 56,
                     object: {hello: "world"},
-                    function: "hello"
+                    function: "hello",
+                    interval: 300000
                 });
             });
 
@@ -317,14 +325,16 @@ describe("Config", () => {
             it("reports errors for malformed environment variables", () => {
                 createEnvVars({
                     INVALID_BOOL: "hmm",
-                    INVALID_OBJ: ":/"
+                    INVALID_OBJ: ":/",
+                    INTERVAL: "hmmm"
                 });
 
                 expect(() => (new ConfigBuilder()).build((env: InjectedEnvironment) => ({
                     bool: env.value("INVALID_BOOL").asBoolean(),
                     boolSecret: env.secret("INVALID_BOOL").asBoolean(),
                     obj: env.value("INVALID_OBJ").asObject(),
-                    objSecret: env.secret("INVALID_OBJ").asObject()
+                    objSecret: env.secret("INVALID_OBJ").asObject(),
+                    interval: env.value("INTERVAL").asInterval()
                 }))).toThrowErrorMatchingSnapshot();
             });
         });
@@ -420,7 +430,9 @@ describe("Config", () => {
                         {name: "objArray", type: ConfigValueType.OBJECT, envKey: "OBJECT_ARRAY", secret: false, splitOn: ","},
                         {name: "bool", type: ConfigValueType.BOOLEAN, envKey: "BOOL", secret: false},
                         {name: "int", type: ConfigValueType.NUMBER, envKey: "INT", secret: false},
-                        {name: "obj", type: ConfigValueType.OBJECT, envKey: "OBJECT", secret: false}
+                        {name: "obj", type: ConfigValueType.OBJECT, envKey: "OBJECT", secret: false},
+                        {name: "timeInterval", type: ConfigValueType.INTERVAL, envKey: "TIME_INTERVAL", secret: false},
+                        {name: "arrayInterval", type: ConfigValueType.INTERVAL, envKey: "TIME_INTERVAL_ARRAY", secret: false, splitOn: "|"}
                     ]
                 };
 
@@ -444,6 +456,8 @@ describe("Config", () => {
                     "BOOL": "true",
                     "INT": "1",
                     "OBJECT": "{}",
+                    "TIME_INTERVAL": "1 hour",
+                    "TIME_INTERVAL_ARRAY": "1 hour|1 hour"
                 });
                 const config = (new ConfigBuilder())
                     .loadPlugAndPlayEnv(pnpKafka)
@@ -465,7 +479,9 @@ describe("Config", () => {
                             intArray: kafka.intArray,
                             int: kafka.int,
                             objArray: kafka.objArray,
-                            obj: kafka.obj
+                            obj: kafka.obj,
+                            timeInterval: kafka.timeInterval,
+                            intervalArray: kafka.arrayInterval
                         }
                     }));
 
@@ -485,7 +501,9 @@ describe("Config", () => {
                         int: 1,
                         intArray: [1, 2, 3],
                         obj: {},
-                        objArray: [{}, {}]
+                        objArray: [{}, {}],
+                        timeInterval: 3600000,
+                        intervalArray: [3600000, 3600000]
                     }
                 });
             });

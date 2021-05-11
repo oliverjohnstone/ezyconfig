@@ -1,3 +1,5 @@
+import humanInterval from "human-interval";
+
 export function parseBoolean(value: string, isSecret: boolean): boolean|string {
     switch (value.toUpperCase().trim()) {
     case "TRUE":
@@ -32,4 +34,16 @@ export function parseObject(value: string, isSecret: boolean): any|string {
             ? "Unable to parse secret value into JSON"
             : `Unable to parse value "${value}" into JSON`;
     }
+}
+
+export function parseInterval(value: string, isSecret: boolean): number|string {
+    const result = humanInterval(value);
+
+    if (typeof result === "undefined" || isNaN(result)) {
+        return isSecret
+            ? "Unable to parse secret value into time interval"
+            : `Unable to parse value "${value}" into time interval`;
+    }
+
+    return result;
 }

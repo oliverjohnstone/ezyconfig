@@ -1,4 +1,4 @@
-import {parseBoolean, parseNumber, parseObject} from "../parsers";
+import {parseBoolean, parseInterval, parseNumber, parseObject} from "../parsers";
 import {
     ConfigValue,
     ConfigValueType,
@@ -88,6 +88,7 @@ export class CoreResolver implements PublicCoreResolverInterface {
         case ConfigValueType.BOOLEAN: parsed = parseBoolean(this.envValue, this.isSecret); break;
         case ConfigValueType.NUMBER: parsed = parseNumber(this.envValue, this.isSecret); break;
         case ConfigValueType.OBJECT: parsed = parseObject(this.envValue, this.isSecret); break;
+        case ConfigValueType.INTERVAL: parsed = parseInterval(this.envValue, this.isSecret); break;
         default: return setAndValidateParsedValue(this.envValue);
         }
 
@@ -109,6 +110,11 @@ export class CoreResolver implements PublicCoreResolverInterface {
 
     public get logValue(): ConfigValue|ConfigValue[] {
         return this.isSecret ? "****" : this.value;
+    }
+
+    public asInterval(): PublicCoreResolverInterface {
+        this.setType(ConfigValueType.INTERVAL);
+        return this;
     }
 
     public asNumber(): PublicCoreResolverInterface {

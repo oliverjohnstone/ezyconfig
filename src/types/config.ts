@@ -67,11 +67,13 @@ export type Validators = {
 export enum ConfigValueType {
     STRING = "STRING",
     NUMBER = "NUMBER",
+    INTERVAL = "INTERVAL",
     BOOLEAN = "BOOLEAN",
     OBJECT = "OBJECT"
 }
 
 export interface PublicArrayResolverInterface {
+    ofIntervals(): PublicArrayResolverInterface;
     ofNumbers(): PublicArrayResolverInterface;
     ofBooleans(): PublicArrayResolverInterface;
     ofObjects(): PublicArrayResolverInterface;
@@ -79,6 +81,7 @@ export interface PublicArrayResolverInterface {
 }
 
 export interface PublicCoreResolverInterface {
+    asInterval(): PublicCoreResolverInterface;
     asNumber(): PublicCoreResolverInterface;
     asBoolean(): PublicCoreResolverInterface;
     asObject(): PublicCoreResolverInterface;
