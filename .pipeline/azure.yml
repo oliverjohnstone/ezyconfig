@@ -87,5 +87,4 @@ stages:
                 inputs:
                   targetType: inline
                   script: |
-                    PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
-                    npm publish --tag=$PACKAGE_VERSION
+                    npm publish
