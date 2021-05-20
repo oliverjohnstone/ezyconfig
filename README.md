@@ -1,4 +1,4 @@
-# ENV Config
+# ezconfig
 
 An environment variable based configuration loader for node projects.
 The motivation for this project is to minimise magic, improve
