@@ -1,4 +1,4 @@
-# ezconfig
+# ezyconfig
 
 An environment variable based configuration loader for node projects.
 The motivation for this project is to minimise magic, improve
@@ -49,7 +49,7 @@ properties. To do this, you can call `toJSON` at any level in the config
 object and this will return the "real" object. Example:
 
 ```javascript
-const {singleton: config} = require("@yupana/env-config");
+const {singleton: config} = require("ezyconfig");
 const ExternalLib = require("some-external-library");
 
 const lib = new ExternalLib(config.externalLibConfig.toJSON());
@@ -69,7 +69,7 @@ environments.
 You should install this module globally to use this script:
 
 ```bash
-npm i -g @yupana/env-config
+npm i -g ezyconfig
 ```
 
 The script usage is as follows:
@@ -125,8 +125,8 @@ There are some default plug and play environments available in this
 module. They can be loaded like so:
 
 ```javascript
-const {mongo, kafka, azure, launchDarkly} = require("@yupana/env-config/lib/pnp");
-const {ConfigBuilder} = require("@yupana/env-config");
+const {mongo, kafka, azure, launchDarkly} = require("ezyconfig");
+const {ConfigBuilder} = require("ezyconfig");
 
 const builder = new ConfigBuilder();
 

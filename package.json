@@ -1,13 +1,13 @@
 {
-  "name": "ezconfig",
-  "version": "1.1.1",
+  "name": "ezyconfig",
+  "version": "1.1.2",
   "description": "Environment based configuration loading",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
     "explain-config": "lib/scripts/explain.js"
   },
-  "repository": "github:oliverjohnstone/ezconfig",
+  "repository": "github:oliverjohnstone/ezyconfig",
   "scripts": {
     "test": "jest",
     "lint": "eslint --ext .js,.ts ./src ./test",

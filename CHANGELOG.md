@@ -1,5 +1,9 @@
 # Change Log
 
+# Version 1.1.2
+
+* Rename module
+
 # Version 1.1.1
 
 * Fixes bug with using config inside an async block
