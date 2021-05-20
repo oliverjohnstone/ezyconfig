@@ -136,3 +136,112 @@ builder
     .loadPlugAndPlayEnv(azure)
     .loadPlugAndPlayEnv(launchDarkly);
 ```
+
+## Usage
+
+Please see the examples or tests folder for concrete examples of how to
+use this module. For brevity, we have listed some common examples below:
+
+### Declaring a secret value
+
+```javascript
+module.exports = (env) => ({
+    secretValue: env.secret("SECRET_ENV_VAR")
+});
+``` 
+
+### Declaring an ENV var with a default value
+
+```javascript
+module.exports = (env) => ({
+    someValue: env.value("ENV_VAR_NAME", "default-value")
+});
+```
+
+### Parsing into specified types
+
+```javascript
+module.exports = (env) => ({
+    boolValue: env.value("BOOL_ENV_VAR").asBoolean(), // BOOL_ENV_VAR=(1|0|true|false|TRUE|FALSE)
+    intValue: env.value("INT_VAR").asNumber(), // INT_VAR=(1, 2, 3, ...)
+    jsonObject: env.value("JSON_STRING").asObject(), // JSON_STRING={"some": "json"}
+    timePeriod: env.value("TIME_PERIOD_VALUE").asInterval(), // TIME_PERIOD_VALUE=(5 seconds, 2 years, ...)
+    
+    // Arrays of values
+    boolValueArray: env.value("ARR_BOOL_ENV_VAR").asArray(",").ofBooleans(), // ARR_BOOL_ENV_VAR=true, true, false, 0
+    intValueArray: env.value("ARR_INT_VAR").asArray("|").ofNumbers(), // ARR_INT_VAR=1|2|656|4
+    jsonObjectArray: env.value("ARR_JSON_STRING").asArray("|").ofObjects(), // ARR_JSON_STRING={"some": "json"}|{"hello": "world}
+    timePeriodArray: env.value("ARR_TIME_PERIOD_VALUE").asArray(",").ofIntervals(), // ARR_TIME_PERIOD_VALUE=5 seconds, 2 years
+});
+```
+
+### Validating parsed values
+
+You can provide custom validators to the validate function in the form
+of:
+
+```javascript
+{
+    name: "validatorName", // Used to provide helpful error messages
+    fn: (value) => /^[a-z]$/.test(value) // Return true if the value passes validation otherwise return false
+}
+```
+
+Otherwise you can make use of the set of validators provided in this
+library:
+
+| Validator        | Description                                                                                                                      |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| isAlpha          | Validates that the value contains only alpha chars                                                                               |
+| isAlphanumeric   | Validates that the value contains only alphanumeric chars                                                                        |
+| isAscii          | Validates that the string contains ASCII chars only                                                                              |
+| isBase32         | Validates that the string is base32 encoded                                                                                      |
+| isBase64         | Validates that the string is base64 encoded                                                                                      |
+| isBIC            | Validates that the string is a BIC (Bank Identification Code) or SWIFT code                                                      |
+| isBtcAddress     | Validates that the string is a bitcoin address                                                                                   |
+| isCurrency       | Validates that the string is a valid currency amount                                                                             |
+| isDataURI        | Validates that the string is a valid data URI format                                                                             |
+| isDate           | Validates that the string is a valid date                                                                                        |
+| isDecimal        | Validates that the string represents a decimal number, such as 0.1, .3, 1.1, 1.00003, 4.0, etc                                   |
+| isDivisibleBy    | Validates that the string is a number that's divisible by another                                                                |
+| isEAN            | Validates that the string is an EAN (European Article Number)                                                                    |
+| isEmail          | Validates that the string is a valid email address                                                                               |
+| isFQDN           | Validates that the string is a fully qualified domain name                                                                       |
+| isHexadecimal    | Validates that the string is a hexadecimal number                                                                                |
+| isHexColor       | Validates that the string is a hexadecimal color                                                                                 |
+| isHSL            | Validates that the string is an HSL (hue, saturation, lightness, optional alpha) color based on CSS Colors Level 4 specification |
+| isIBAN           | Validates that the string is a IBAN (International Bank Account Number)                                                          |
+| isIP             | Validates that the string is an IP (version 4 or 6)                                                                              |
+| isIPRange        | Validates that the string is an IP Range (version 4 or 6)                                                                        |
+| isISO8601        | Validates that the string is a valid ISO 8601 date                                                                               |
+| isISO31661Alpha2 | Validates that the string is a valid ISO 3166-1 alpha-2 officially assigned country code                                         |
+| isISO31661Alpha3 | Validates that the string is a valid ISO 3166-1 alpha-3 officially assigned country code                                         |
+| isJWT            | Validates that the string is valid JWT token                                                                                     |
+| isLocale         | Validates that the string is a locale                                                                                            |
+| isLowercase      | Validates that the string is lowercase                                                                                           |
+| isMACAddress     | Validates that the string is a MAC address                                                                                       |
+| isMD5            | Validates that the string is a MD5 hash                                                                                          |
+| isMimeType       | Validates that string matches to a valid MIME type format                                                                        |
+| isMongoId        | Validates that the string is a valid hex-encoded representation of a MongoDB ObjectId                                            |
+| isMultibyte      | Validates that the string contains one or more multibyte chars                                                                   |
+| isNumeric        | Validates that the string contains only numbers                                                                                  |
+| isOctal          | Validates that the string is a valid octal number                                                                                |
+| isRFC3339        | Validates that the string is a valid RFC 3339 date                                                                               |
+| isRgbColor       | Validates that the string is a rgb or rgba color                                                                                 |
+| isSemVer         | Validates that the string is a Semantic Versioning Specification (SemVer)                                                        |
+| isUppercase      | Validates that the string is uppercase                                                                                           |
+| isSlug           | Validates that the string is of type slug                                                                                        |
+| isURL            | Validates that the string is an URL                                                                                              |
+| isUUID           | Validates that the string is a UUID (version 3, 4 or 5)                                                                          |
+| isVariableWidth  | Validates that the string contains a mixture of full and half-width chars                                                        |
+| isPort           | Validates that the value given is a valid port number                                                                            |
+| fileExists       | Validates that the file path described exists - This is useful for service dependencies such as certificates etc                 |
+
+Example:
+
+```javascript
+module.exports = (env) => ({
+    servicePort: env.value("SERVICE_PORT").validate(env.validators.isPort),
+    certificatePath: env.value("CERT_PATH").validate(env.validators.fileExists)
+});
+```

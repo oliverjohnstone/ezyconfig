@@ -526,6 +526,20 @@ describe("Config", () => {
             expect(config.nested.b).toBe("hello-world");
         });
 
+        it("can be returned from an async function", async () => {
+            const fn = async () => (new ConfigBuilder()).build(() => ({a: "hello"}));
+
+            await expect((async () => {
+                const result = await fn();
+                return result.a;
+            })()).resolves.toBe("hello");
+
+            await expect((async () => {
+                const result = await fn();
+                return result.b; // Property doesn't exist so will throw
+            })()).rejects.toThrow("Cannot get property b because it does not exist in the built config.");
+        });
+
         it("throws an error trying to get a property that doesn't exist", () => {
             const config = (new ConfigBuilder()).build(() => ({a: []}));
 

@@ -1,5 +1,11 @@
 # Change Log
 
+# Version 1.1.1
+
+* Fixes bug with using config inside an async block
+* Improves documentation and examples
+* Adds in missing default array split char
+
 # Version 1.1.0
 
 * Adds time intervals as a first class type

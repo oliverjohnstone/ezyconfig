@@ -42,6 +42,7 @@ export function isProxyWhitelist(p: PropertyKey): boolean {
         "reduce",
         "some",
         "values",
-        "entries"
+        "entries",
+        "then"
     ].includes(p.toString());
 }

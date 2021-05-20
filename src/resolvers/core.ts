@@ -132,7 +132,7 @@ export class CoreResolver implements PublicCoreResolverInterface {
         return this;
     }
 
-    public asArray(splitOn: string): PublicArrayResolverInterface {
+    public asArray(splitOn = ","): PublicArrayResolverInterface {
         if (![null, ConfigValueType.STRING].includes(this.type)) {
             this.buildErrors.push(`Can only convert string values to array, but ${this.type} was specified.`);
         }
