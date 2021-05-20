@@ -87,4 +87,4 @@ stages:
                 inputs:
                   targetType: inline
                   script: |
-                    npm publish
+                    npm publish --registry=https://registry.npmjs.org
