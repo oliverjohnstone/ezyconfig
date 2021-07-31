@@ -9,18 +9,24 @@ name: $(SourceBranchName)_$(BuildID)_$(Rev:r)
 variables:
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
-jobs:
-  - job: compliance
-    steps:
-      - task: Bash@3
-        displayName: Check if files exist
-        inputs:
-          targetType: inline
-          script: |
-            test -f ./package-lock.json && echo "package-lock.json exists." || echo "##vso[task.logissue type=error]package-lock.json does not exist."
-            test -f ./package.json && echo "package.json exists." || echo "##vso[task.logissue type=error]package.json does not exist."
+stages:
+  - stage: compliance
+    displayName: All files should be present
+    jobs:
+      - job: compliance
+        steps:
+          - task: Bash@3
+            displayName: Check if files exist
+            inputs:
+              targetType: inline
+              script: |
+                test -f ./package-lock.json && echo "package-lock.json exists." || echo "##vso[task.logissue type=error]package-lock.json does not exist."
+                test -f ./package.json && echo "package.json exists." || echo "##vso[task.logissue type=error]package.json does not exist."
 
-  - job: Validate
-    steps:
-       - template: templates/install.yml
-       - template: templates/validate.yml
+  - stage: quality
+    displayName: Lint and unit tests
+    jobs:
+      - job: Validate
+        steps:
+           - template: templates/install.yml
+           - template: templates/validate.yml
