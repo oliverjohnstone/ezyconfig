@@ -4,8 +4,6 @@ trigger:
     include:
       - main
 
-pool: "LoopAutoScale"
-
 name: $(SourceBranchName)_$(BuildID)_$(Rev:r)
 
 variables:

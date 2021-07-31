@@ -14,6 +14,10 @@ import {
 import {Environment} from "./types/environment";
 import {createObjectPath, isProduction, isRecursableObject} from "./utils";
 import {ValueBuilder} from "./valueBuilder";
+import azurePnP from "./pnp/azure";
+import kafkaPnP from "./pnp/kafka";
+import launchDarklyPnP from "./pnp/launchDarkly";
+import mongoPnP from "./pnp/mongo";
 
 type ValueBuilderConfig = {
     [key: string]: ValueBuilder|ValueBuilderConfig
@@ -273,5 +277,14 @@ const singleton = new Proxy({} as ResolvedConfig, {
 export {
     singleton,
     resetSingleton,
-    ConfigBuilder
+    ConfigBuilder,
+    ResolvedConfig,
+    PlugAndPlayEnvironment,
+    InjectedEnvironment,
+    ConfigValue,
+    ConfigReturnType,
+    azurePnP,
+    mongoPnP,
+    kafkaPnP,
+    launchDarklyPnP
 };

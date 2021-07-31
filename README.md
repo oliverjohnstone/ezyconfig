@@ -66,12 +66,6 @@ means that we can simply pass the config function to the script and pass
 the output to the pipeline developer to configure the individual
 environments.
 
-You should install this module globally to use this script:
-
-```bash
-npm i -g ezyconfig
-```
-
 The script usage is as follows:
 
 ```bash
@@ -125,16 +119,15 @@ There are some default plug and play environments available in this
 module. They can be loaded like so:
 
 ```javascript
-const {mongo, kafka, azure, launchDarkly} = require("ezyconfig");
-const {ConfigBuilder} = require("ezyconfig");
+const {mongoPnP, kafkaPnP, azurePnP, launchDarklyPnP, ConfigBuilder} = require("ezyconfig");
 
 const builder = new ConfigBuilder();
 
 builder
-    .loadPlugAndPlayEnv(mongo)
-    .loadPlugAndPlayEnv(kafka)
-    .loadPlugAndPlayEnv(azure)
-    .loadPlugAndPlayEnv(launchDarkly);
+    .loadPlugAndPlayEnv(mongoPnP)
+    .loadPlugAndPlayEnv(kafkaPnP)
+    .loadPlugAndPlayEnv(azurePnP)
+    .loadPlugAndPlayEnv(launchDarklyPnP);
 ```
 
 ## Usage
@@ -188,7 +181,7 @@ of:
 ```
 
 Otherwise you can make use of the set of validators provided in this
-library:
+library by [validator.js](https://www.npmjs.com/package/validator) :
 
 | Validator        | Description                                                                                                                      |
 |------------------|----------------------------------------------------------------------------------------------------------------------------------|
@@ -243,5 +236,22 @@ Example:
 module.exports = (env) => ({
     servicePort: env.value("SERVICE_PORT").validate(env.validators.isPort),
     certificatePath: env.value("CERT_PATH").validate(env.validators.fileExists)
+});
+```
+
+### Usage with typescript
+
+This library works seamlessly with typescript, should you wish to define
+your config in typescript as well:
+
+```typescript
+import {InjectedEnvironment, ConfigReturnType, PlugAndPlayEnvironment} from "ezyconfig";
+
+export default (env: InjectedEnvironment, {kafka}: PlugAndPlayEnvironment): ConfigReturnType => ({
+    appConfigValue: env.secret("SECRET_ENV"),
+    isProduction: env.isProduction(),
+    kafka: {
+        brokers: kafka.brokers
+    }
 });
 ```

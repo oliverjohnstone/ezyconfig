@@ -1,5 +1,11 @@
 # Change Log
 
+# Version 1.1.3
+
+* Small improvements to documentation
+* Export types from index
+* Remove references from Loop pool
+
 # Version 1.1.2
 
 * Rename module
