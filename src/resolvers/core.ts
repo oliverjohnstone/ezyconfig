@@ -8,7 +8,7 @@ import {
 } from "../types/config";
 import {ArrayResolver} from "./array";
 
-export class CoreResolver implements PublicCoreResolverInterface {
+export class CoreResolver<T extends ConfigValue = string> implements PublicCoreResolverInterface<T> {
     public readonly defaultValue: ConfigValue | ConfigValue[] | undefined;
     public readonly envKey: string;
     readonly envValue: string|null;
@@ -100,50 +100,50 @@ export class CoreResolver implements PublicCoreResolverInterface {
         return setAndValidateParsedValue(parsed);
     }
 
-    public get parsedEnvValue(): ConfigValue|null {
+    public get parsedEnvValue(): ConfigValue {
         return this.parsedValue;
     }
 
-    public get value(): ConfigValue|ConfigValue[] {
-        return this.parsed ? this.parsedEnvValue : (this.defaultValue as ConfigValue);
+    public value(): T {
+        return (this.parsed ? this.parsedEnvValue : this.defaultValue) as T;
     }
 
     public get logValue(): ConfigValue|ConfigValue[] {
-        return this.isSecret ? "****" : this.value;
+        return this.isSecret ? "****" : this.value();
     }
 
-    public asInterval(): PublicCoreResolverInterface {
+    public asInterval(): PublicCoreResolverInterface<number> {
         this.setType(ConfigValueType.INTERVAL);
-        return this;
+        return this as CoreResolver<number>;
     }
 
-    public asNumber(): PublicCoreResolverInterface {
+    public asNumber(): PublicCoreResolverInterface<number> {
         this.setType(ConfigValueType.NUMBER);
-        return this;
+        return this as CoreResolver<number>;
     }
 
-    public asBoolean(): PublicCoreResolverInterface {
+    public asBoolean(): PublicCoreResolverInterface<boolean> {
         this.setType(ConfigValueType.BOOLEAN);
-        return this;
+        return this as CoreResolver<boolean>;
     }
 
-    public asObject(): PublicCoreResolverInterface {
+    public asObject<OT extends Record<string, unknown>>(): PublicCoreResolverInterface<OT> {
         this.setType(ConfigValueType.OBJECT);
-        return this;
+        return this as CoreResolver<OT>;
     }
 
     public asArray(splitOn = ","): PublicArrayResolverInterface {
         if (![null, ConfigValueType.STRING].includes(this.type)) {
             this.buildErrors.push(`Can only convert string values to array, but ${this.type} was specified.`);
         }
-        return new ArrayResolver(this, splitOn);
+        return new ArrayResolver(this as CoreResolver, splitOn);
     }
 
     public getBuildErrors(): string[] {
         return this.buildErrors;
     }
 
-    public validate({name, fn}: {name: string, fn: Validator}): PublicCoreResolverInterface {
+    public validate({name, fn}: {name: string, fn: Validator}): PublicCoreResolverInterface<T> {
         this.validator = fn;
         this.validatorName = name;
         return this;

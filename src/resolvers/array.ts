@@ -3,7 +3,7 @@ import {ArrayConfigValue, ConfigValue, ConfigValueType, PublicArrayResolverInter
 import {CoreResolver} from "./core";
 
 // Create a decorator of CoreResolver with exclusive array based functions
-export class ArrayResolver implements PublicArrayResolverInterface {
+export class ArrayResolver<T extends ArrayConfigValue = []> implements PublicArrayResolverInterface<T> {
     public readonly base: CoreResolver;
     public readonly splitOn: string;
     private buildErrors: string[] = [];
@@ -15,35 +15,35 @@ export class ArrayResolver implements PublicArrayResolverInterface {
         this.splitOn = splitOn;
     }
 
-    public get value(): ArrayConfigValue {
-        return this.parsedValue.length ? this.parsedValue : (this.base.defaultValue as ArrayConfigValue);
+    public value(): T {
+        return (this.parsedValue.length ? this.parsedValue : this.base.defaultValue) as T;
     }
 
     public get logValue(): ArrayConfigValue {
-        return this.base.isSecret ? this.value.map(() => "****") : this.value;
+        return this.base.isSecret ? this.value().map(() => "****") : this.value();
     }
 
-    public ofIntervals(): PublicArrayResolverInterface {
+    public ofIntervals(): PublicArrayResolverInterface<number[]> {
         this.type = ConfigValueType.INTERVAL;
-        return this;
+        return this as ArrayResolver<number[]>;
     }
 
-    public ofNumbers(): PublicArrayResolverInterface {
+    public ofNumbers(): PublicArrayResolverInterface<number[]> {
         this.type = ConfigValueType.NUMBER;
-        return this;
+        return this as ArrayResolver<number[]>;
     }
 
-    public ofBooleans(): PublicArrayResolverInterface {
+    public ofBooleans(): PublicArrayResolverInterface<boolean[]> {
         this.type = ConfigValueType.BOOLEAN;
-        return this;
+        return this as ArrayResolver<boolean[]>;
     }
 
-    public ofObjects():  PublicArrayResolverInterface {
+    public ofObjects<O extends Record<string, unknown>>(): PublicArrayResolverInterface<O[]> {
         this.type = ConfigValueType.OBJECT;
-        return this;
+        return this as ArrayResolver<O[]>;
     }
 
-    public validate(validator: {name: string, fn: Validator}): PublicArrayResolverInterface {
+    public validate(validator: {name: string, fn: Validator}): PublicArrayResolverInterface<T> {
         this.base.validate(validator);
         return this;
     }

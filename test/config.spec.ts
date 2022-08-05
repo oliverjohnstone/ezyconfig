@@ -1,4 +1,6 @@
-import {ConfigBuilder, resetSingleton, singleton as singletonConfig} from "../src";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import {ConfigBuilder} from "../src";
 import {InjectedEnvironment} from "../src/injectedEnvironment";
 import {ConfigReturnType, ConfigValueType} from "../src/types/config";
 import {Environment} from "../src/types/environment";
@@ -7,7 +9,6 @@ const vars: {[key: string]: string} = {};
 
 function clean(): void {
     Object.keys(vars).forEach(v => delete process.env[v]);
-    resetSingleton();
 }
 
 function createEnvVars(toSet: {[key: string]: string}): void {
@@ -106,8 +107,6 @@ describe("Config", () => {
 
             expect(() => builder.loadPlugAndPlayEnv({name: "test", properties: []}))
                 .toThrow("Config has already been built. Try creating a new ConfigBuilder");
-            expect(() => builder.singleton())
-                .toThrow("Config has already been built. Try creating a new ConfigBuilder");
         });
 
         it("throws exceptions when calling methods that require build to be called first", () => {
@@ -166,42 +165,6 @@ describe("Config", () => {
                 expect(() => (new ConfigBuilder()).build((env: InjectedEnvironment) => ({
                     bools: env.value("ARRAY").asArray(",").ofBooleans()
                 }))).toThrowErrorMatchingSnapshot();
-            });
-        });
-
-        describe("Singleton", () => {
-            it("exports a singleton instance when requested", () => {
-                const config = (new ConfigBuilder())
-                    .singleton()
-                    .build(() => ({hello: "world"}));
-
-                expect(singletonConfig.hello).toBe("world");
-                expect(config.hello).toBe("world");
-            });
-
-            it("does not export a singleton instance when not requested", () => {
-                const config = (new ConfigBuilder()).build(() => ({hello: "world"}));
-
-                expect(() => singletonConfig.hello).toThrow(
-                    "Singleton export not available. Are you sure you've configured it, or perhaps build() hasn't been called?"
-                );
-                expect(config.hello).toBe("world");
-            });
-
-            it("resets the singleton export when calling resetSingleton()", () => {
-                const config = (new ConfigBuilder())
-                    .singleton()
-                    .build(() => ({a: "hi"}));
-
-                expect(singletonConfig.a).toBe("hi");
-                expect(config.a).toBe("hi");
-
-                resetSingleton();
-
-                expect(() => singletonConfig.a).toThrow(
-                    "Singleton export not available. Are you sure you've configured it, or perhaps build() hasn't been called?"
-                );
-                expect(config.a).toBe("hi");
             });
         });
 
@@ -513,12 +476,12 @@ describe("Config", () => {
     describe("Runtime", () => {
         it("is immutable", () => {
             const config = (new ConfigBuilder())
-                .build((env: InjectedEnvironment): ConfigReturnType => ({
+                .build((env: InjectedEnvironment) => ({
                     a: env.value("TEST", [1, 2, 3]).asArray(",").ofNumbers(),
                     nested: {
                         b: "hello-world"
                     }
-                }));
+                })) as any; // Cast to any to check the runtime guards
 
             expect(() => config.a.push(4)).toThrow("Cannot change array a. Config is immutable.");
             expect(() => {config.nested.b = "bob";}).toThrow("Cannot change property nested.b. Config is immutable.");
@@ -535,36 +498,22 @@ describe("Config", () => {
             })()).resolves.toBe("hello");
 
             await expect((async () => {
-                const result = await fn();
+                const result = await fn() as any; // Cast to any to check the runtime guards
                 return result.b; // Property doesn't exist so will throw
             })()).rejects.toThrow("Cannot get property b because it does not exist in the built config.");
         });
 
         it("throws an error trying to get a property that doesn't exist", () => {
-            const config = (new ConfigBuilder()).build(() => ({a: []}));
+            const config = (new ConfigBuilder()).build(() => ({a: []})) as any; // Cast to any to check the runtime guards
 
             expect(() => config.test).toThrow("Cannot get property test because it does not exist in the built config.");
             expect(() => config.a[1]).toThrow("Cannot get property a[1] because it does not exist in the built config.");
         });
 
-        it("throws an error when setting a property on the default exported config", () => {
-            (new ConfigBuilder()).build(() => ({}));
-
-            expect(() => singletonConfig.test = "bob").toThrow(
-                "Singleton export not available. Are you sure you've configured it, or perhaps build() hasn't been called?"
-            );
-
-            (new ConfigBuilder()).singleton().build(() => ({}));
-
-            expect(() => singletonConfig.test = "bob").toThrow(
-                "Cannot change property test. Config is immutable."
-            );
-        });
-
         it("returns the underlying object when calling toJSON", () => {
             const objectValue = {some: {complex: {object: "value"}}};
             const config = (new ConfigBuilder())
-                .build((): ConfigReturnType => ({object: {value: objectValue}}));
+                .build(() => ({object: {value: objectValue}}));
 
             expect(config.object.value.toJSON()).toEqual(objectValue);
         });
@@ -572,11 +521,11 @@ describe("Config", () => {
         it("does not throw an exception when accessing non-existent properties on a object obtained via toJSON()", () => {
             const objectValue = {some: {complex: {object: "value"}}};
             const config = (new ConfigBuilder())
-                .build((): ConfigReturnType => ({object: {value: objectValue}}));
+                .build(() => ({object: {value: objectValue}}));
 
-            expect(() => config.object.toJSON().unknown).not.toThrow();
-            expect(() => config.object.toJSON().value.unknown).not.toThrow();
-            expect(() => config.object.toJSON().value.some.complex.unknown).not.toThrow();
+            expect(() => (config.object.toJSON() as any).unknown).not.toThrow();
+            expect(() => (config.object.toJSON() as any).value.unknown).not.toThrow();
+            expect(() => (config.object.toJSON() as any).value.some.complex.unknown).not.toThrow();
         });
     });
 

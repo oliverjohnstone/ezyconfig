@@ -6,10 +6,27 @@ export type ConfigReturnType = {
     [key: string]: PublicCoreResolverInterface|PublicArrayResolverInterface|ConfigValue|ConfigReturnType|ArrayConfigValue;
 };
 
-// Really the following type should be a primitive rather than "any" but to avoid consumer
-// typescript compilation issues with accessing a property of null etc, we set to "any"
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ResolvedConfig = Record<string, any>;
+type DefaultOnUnknown<T, D> =
+    T extends ConfigValue ? T :
+    T extends ArrayConfigValue ? T :
+    D;
+
+type MutableConfig<T extends Record<string, unknown>> = {
+    -readonly [K in keyof T]: T[K] extends Record<string, unknown> ? MutableConfig<T[K]> : T[K];
+}
+
+export type Config<Fn extends ConfigFunction, T = ReturnType<Fn>> = {
+    readonly [K in keyof T]:
+        // Recursion on nested objects
+        T[K] extends Record<string, unknown> ? Config<Fn, T[K]> :
+        // Primitive resolver maps to the user specified type
+        T[K] extends PublicCoreResolverInterface ? DefaultOnUnknown<ReturnType<T[K]["value"]>, string> :
+        // Primitive array resolver maps to the user specified type as an array
+        T[K] extends PublicArrayResolverInterface ? DefaultOnUnknown<ReturnType<T[K]["value"]>, string[]> :
+        T[K];
+} & {
+    toJSON: () => MutableConfig<Config<Fn, T>>;
+}
 
 export type PlugAndPlayEnvironment = Record<string, Record<string, ConfigValue>>;
 export type ConfigFunction = (environment: InjectedEnvironment, plugAndPlay: PlugAndPlayEnvironment) => ConfigReturnType;
@@ -72,19 +89,21 @@ export enum ConfigValueType {
     OBJECT = "OBJECT"
 }
 
-export interface PublicArrayResolverInterface {
-    ofIntervals(): PublicArrayResolverInterface;
-    ofNumbers(): PublicArrayResolverInterface;
-    ofBooleans(): PublicArrayResolverInterface;
-    ofObjects(): PublicArrayResolverInterface;
-    validate({name, fn}: {name: string, fn: Validator}): PublicArrayResolverInterface
+export interface PublicArrayResolverInterface<T = unknown[]> {
+    value(): T;
+    ofIntervals(): PublicArrayResolverInterface<number[]>;
+    ofNumbers(): PublicArrayResolverInterface<number[]>;
+    ofBooleans(): PublicArrayResolverInterface<boolean[]>;
+    ofObjects<O extends Record<string, unknown>>(): PublicArrayResolverInterface<O[]>;
+    validate({name, fn}: {name: string, fn: Validator}): PublicArrayResolverInterface<T>
 }
 
-export interface PublicCoreResolverInterface {
-    asInterval(): PublicCoreResolverInterface;
-    asNumber(): PublicCoreResolverInterface;
-    asBoolean(): PublicCoreResolverInterface;
-    asObject(): PublicCoreResolverInterface;
+export interface PublicCoreResolverInterface<T = unknown> {
+    value(): T;
+    asInterval(): PublicCoreResolverInterface<number>;
+    asNumber(): PublicCoreResolverInterface<number>;
+    asBoolean(): PublicCoreResolverInterface<boolean>;
+    asObject<O extends Record<string, unknown>>(): PublicCoreResolverInterface<O>;
     asArray(splitOn: string): PublicArrayResolverInterface;
-    validate({name, fn}: {name: string, fn: Validator}): PublicCoreResolverInterface;
+    validate({name, fn}: {name: string, fn: Validator}): PublicCoreResolverInterface<T>;
 }
