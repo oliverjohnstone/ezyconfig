@@ -1,17 +1,18 @@
-import {ConfigValue, ResolvedConfig} from "./types/config";
+import {ConfigFunction, ConfigValue, Config} from "./types/config";
 import {createObjectPath, isPrimitive, isProxyWhitelist} from "./utils";
 import cloneDeep from "lodash.clonedeep";
 
-function wrap(path: string, config: ResolvedConfig, clone: ResolvedConfig): ResolvedConfig {
+function wrap<T extends ConfigFunction>(path: string, config: Config<T>, clone: Config<T>): Config<T> {
     return new Proxy(config, {
-        set(target: ResolvedConfig, p: PropertyKey): boolean {
+        set(target: Config<T>, p: PropertyKey): boolean {
             if (Array.isArray(config)) {
                 throw new Error(`Cannot change array ${path}. Config is immutable.`);
             } else {
                 throw new Error(`Cannot change property ${createObjectPath(path, p.toString())}. Config is immutable.`);
             }
         },
-        get(target: ResolvedConfig, p: PropertyKey, receiver: unknown): unknown|ConfigValue|ConfigValue[] {
+
+        get(target: Config<T>, p: PropertyKey, receiver: unknown): unknown|ConfigValue|ConfigValue[] {
             if (p === "toJSON") {
                 return () => clone;
             }
@@ -33,7 +34,7 @@ function wrap(path: string, config: ResolvedConfig, clone: ResolvedConfig): Reso
     });
 }
 
-export function wrapInProxiesRecursive(path: string, config: ResolvedConfig): ResolvedConfig {
+export function wrapInProxiesRecursive<T extends ConfigFunction>(path: string, config: Config<T>): Config<T> {
     const clone = cloneDeep(config);
 
     if (Array.isArray(config)) {
@@ -44,6 +45,6 @@ export function wrapInProxiesRecursive(path: string, config: ResolvedConfig): Re
         ...acc,
         [key]: isPrimitive(value)
             ? value
-            : wrapInProxiesRecursive(createObjectPath(path, key), value as ResolvedConfig)
-    }), {}), clone);
+            : wrapInProxiesRecursive(createObjectPath(path, key), value as Config<T>)
+    }), {} as Config<T>), clone);
 }

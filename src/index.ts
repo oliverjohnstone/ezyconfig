@@ -9,7 +9,7 @@ import {
     ConfigValue,
     ConfigValueType,
     PlugAndPlayEnvironment,
-    ResolvedConfig
+    Config
 } from "./types/config";
 import {Environment} from "./types/environment";
 import {createObjectPath, isProduction, isRecursableObject} from "./utils";
@@ -35,15 +35,12 @@ type PlugAndPlayEnvs = {
     }
 };
 
-let singletonConfigInstance: ResolvedConfig|null = null;
-
 class ConfigBuilder {
     private readonly plugAndPlayEnvs: PlugAndPlayEnvs = {};
-    private setupSingleton = false;
     private requiredEnvironmentVariables: RequiredEnvironmentVariableDescription[] = [];
-    private builtConfig: ResolvedConfig|null = null;
+    private builtConfig: Record<string, unknown>|null = null;
     private builtWithErrors = false;
-    private obfuscatedConfig: ResolvedConfig|null = null;
+    private obfuscatedConfig: Record<string, unknown>|null = null;
 
     public getRequiredEnvironmentVariables(): RequiredEnvironmentVariableDescription[] {
         if (!this.builtWithErrors && !this.builtConfig) {
@@ -59,11 +56,11 @@ class ConfigBuilder {
         });
     }
 
-    public getLoggableConfigObject(): ResolvedConfig {
+    public getLoggableConfigObject<T extends ConfigFunction>(): Config<T> {
         if (!this.builtConfig) {
             throw new Error("Config should be built before getting the loggable config object.");
         }
-        return this.obfuscatedConfig as ResolvedConfig;
+        return this.obfuscatedConfig as Config<T>;
     }
 
     public static setDevelopmentEnvironmentVariables(envVars: {[key: string]: string}): void {
@@ -84,14 +81,6 @@ class ConfigBuilder {
         return this;
     }
 
-    public singleton(): ConfigBuilder {
-        if (this.builtConfig) {
-            throw new Error("Config has already been built. Try creating a new ConfigBuilder");
-        }
-        this.setupSingleton = true;
-        return this;
-    }
-
     private createPlugAndPlayProxy(): PlugAndPlayEnvironment {
         const envs = this.plugAndPlayEnvs;
         return new Proxy({} as PlugAndPlayEnvironment, {
@@ -107,7 +96,7 @@ class ConfigBuilder {
         });
     }
 
-    public build(configFn: ConfigFunction): ResolvedConfig {
+    public build<T extends ConfigFunction>(configFn: T): Config<T> {
         if (this.builtConfig) {
             throw new Error("Config has already been built");
         }
@@ -129,20 +118,14 @@ class ConfigBuilder {
 
         const errors: string[] = [];
         const {resolvedConfig, obfuscatedConfig} =
-            this.resolveValuesRecursive(valueBuilders as ValueBuilderConfig, errors);
+            this.resolveValuesRecursive<T>(valueBuilders as ValueBuilderConfig, errors);
 
         if (errors.length) {
             this.builtWithErrors = true;
             throw new Error(errors.join(`\n\n${"-".repeat(100)}\n\n`));
         }
 
-        const wrapped = wrapInProxiesRecursive("", resolvedConfig);
-
-        if (this.setupSingleton) {
-            // Allows subsequent usage by import at the top of the file rather than passing the config
-            // around between functions.
-            singletonConfigInstance = wrapped;
-        }
+        const wrapped = wrapInProxiesRecursive<T>("", resolvedConfig);
 
         this.builtConfig = wrapped;
         this.obfuscatedConfig = obfuscatedConfig;
@@ -150,9 +133,9 @@ class ConfigBuilder {
         return wrapped;
     }
 
-    private resolveValuesRecursive(intermediate: ValueBuilderConfig|ConfigValue, errors: string[]): {
-        resolvedConfig: ResolvedConfig;
-        obfuscatedConfig: ResolvedConfig;
+    private resolveValuesRecursive<T extends ConfigFunction>(intermediate: ValueBuilderConfig|ConfigValue, errors: string[]): {
+        resolvedConfig: Config<T>;
+        obfuscatedConfig: Config<T>;
     } {
         return Object.entries(intermediate as ValueBuilderConfig).reduce((acc, [key, valueBuilder]) => {
             let resolvedValue;
@@ -200,7 +183,7 @@ class ConfigBuilder {
                     [key]: obfuscatedValue
                 }
             };
-        }, {resolvedConfig: {}, obfuscatedConfig: {}});
+        }, {resolvedConfig: {} as Config<T>, obfuscatedConfig: {} as Config<T>});
     }
 
     private mapIntoValueBuildersRecursive(path: string, intermediate: ConfigReturnType): ValueBuilderConfig|ConfigValue {
@@ -243,35 +226,8 @@ class ConfigBuilder {
     }
 }
 
-function resetSingleton(): void {
-    singletonConfigInstance = null;
+export { ConfigBuilder };
+
+export default function build<T extends ConfigFunction>(configFn: T): Config<T> {
+    return new ConfigBuilder().build(configFn);
 }
-
-const singleton = new Proxy({} as ResolvedConfig, {
-    get(target: ResolvedConfig, p: PropertyKey): unknown|ConfigValue|ConfigValue[] {
-        if (singletonConfigInstance === null) {
-            throw new Error("Singleton export not available. Are you sure you've configured it, " +
-                "or perhaps build() hasn't been called?"
-            );
-        } else {
-            return singletonConfigInstance[p.toString()];
-        }
-    },
-
-    set(target: ResolvedConfig, p: PropertyKey, value: ConfigValue|ConfigValue[]): boolean {
-        if (singletonConfigInstance === null) {
-            throw new Error("Singleton export not available. Are you sure you've configured it, " +
-                "or perhaps build() hasn't been called?"
-            );
-        } else {
-            singletonConfigInstance[p.toString()] = value;
-            return true;
-        }
-    }
-});
-
-export {
-    singleton,
-    resetSingleton,
-    ConfigBuilder
-};

@@ -1,7 +1,6 @@
 const {ConfigBuilder} = require("../lib/index");
 const configFn = require("./config");
 const pnp = require("./testPnP");
-const singletonExample = require("./singleton");
 
 // This can only be used in non production environments, to make it a little
 // easier to test, for example. Attempting to use this in a production env
@@ -34,7 +33,6 @@ const builder = new ConfigBuilder();
 // Build the config
 const config = builder
     .loadPlugAndPlayEnv(pnp)
-    .singleton()
     .build(configFn);
 
 // Log the full config object - note that this will include full secret values
@@ -45,11 +43,6 @@ console.log(`\n${"-".repeat(50)}\n`);
 // Log the full config object with obfuscated secret values now
 console.log("Obfuscated Log:");
 console.log(JSON.stringify(builder.getLoggableConfigObject(), null, 2));
-console.log(`\n${"-".repeat(50)}\n`);
-
-// Property from file using singleton
-console.log("Singleton Example:");
-console.log(singletonExample());
 console.log(`\n${"-".repeat(50)}\n`);
 
 // Returning the underlying object for passing into dependent libraries

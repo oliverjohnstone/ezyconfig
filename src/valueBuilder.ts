@@ -31,7 +31,7 @@ export class ValueBuilder {
 
     public get value(): {value: ConfigValue|ConfigValue[], logValue: ConfigValue|ConfigValue[]}  {
         return {
-            value: this.resolver.value,
+            value: this.resolver.value(),
             logValue: this.resolver.logValue
         };
     }
