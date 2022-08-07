@@ -1,5 +1,7 @@
 # ezyconfig
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/oliverjohnstone/ezyconfig/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/oliverjohnstone/ezyconfig/tree/main)
+
 An environment variable based configuration loader for node projects.
 The motivation for this project is to minimise magic, improve
 communication and documentation in the form of self documenting
