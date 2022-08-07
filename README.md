@@ -36,12 +36,6 @@ been wrapped in proxies to provide more detailed error messages and to
 ensure that the loaded config remains immutable, avoiding any
 potentially strange behaviour.
 
-It is recommended to dependency inject the returned config object from
-the ConfigBuilder but we understand that it is not always practical
-and/or doesn't necessarily lead to maintainable or neat code. We have
-therefore included a way to export a singleton configuration object so
-it can be imported like a normal node module.
-
 Sometimes it is necessary to get the normal config object that has not
 been wrapped in a proxy so that you can pass the object down into
 dependencies without causing exceptions when accessing non-existent
@@ -49,7 +43,6 @@ properties. To do this, you can call `toJSON` at any level in the config
 object and this will return the "real" object. Example:
 
 ```javascript
-const {singleton: config} = require("ezyconfig");
 const ExternalLib = require("some-external-library");
 
 const lib = new ExternalLib(config.externalLibConfig.toJSON());
@@ -187,7 +180,7 @@ of:
 }
 ```
 
-Otherwise you can make use of the set of validators provided in this
+Otherwise, you can make use of the set of validators provided in this
 library:
 
 | Validator        | Description                                                                                                                      |
@@ -245,3 +238,32 @@ module.exports = (env) => ({
     certificatePath: env.value("CERT_PATH").validate(env.validators.fileExists)
 });
 ```
+
+### Typescript Support
+
+From version 2.0.0 there is much better support for typescript with the parser declared type
+as the defined type on the built config. Example:
+
+```typescript
+import ConfigBuilder from 'ezyconfig';
+
+const config = ConfigBuilder((env) => ({
+  bool: env.value('BOOL').asBoolean(),
+  string: env.value('STR'),
+  array: env.value('ARRAY').asArray(',').ofNumbers(),
+  object: env.value('OBJ').asObject<{ hello: string }>(),
+  fixedValue: true
+}));
+
+config.bool // Defined as readonly boolean
+config.string // Defined as readonly string - default type
+config.array // Defined as readonly number[]
+config.object // Defined as the readonly value of the type specified in the generic, or Record<string, unknown> by default
+config.fixedValue // Defined as readonly true
+```
+
+### Default export
+
+From version 2.0.0 there is a default config builder exported from the module. This is to reduce
+the amount of boilerplate needed when you want to just build the config and not inspect the loggable
+object etc.
