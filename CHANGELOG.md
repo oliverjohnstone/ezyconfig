@@ -6,6 +6,7 @@
 * Removed singleton support
 * Exported default config builder for when you don't need to access loggable objects etc
 * Updated CI pipeline
+* NPM audit
 
 # Version 1.1.2
 

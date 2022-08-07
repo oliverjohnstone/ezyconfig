@@ -44,6 +44,6 @@
     "commander": "^7.1.0",
     "human-interval": "^2.0.1",
     "lodash.clonedeep": "^4.5.0",
-    "validator": "^13.5.2"
+    "validator": "^13.7.0"
   }
 }
